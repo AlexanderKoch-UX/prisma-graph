@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<idea-plugin>
+    <id>com.alexanderkoch.prismagraph</id>
+    <name>Prisma Graph Visualizer</name>
+    <vendor email="alexander.koch@example.com" url="https://github.com/AlexanderKoch-UX">Alexander Koch</vendor>
+
+    <description><![CDATA[
+    Ein Plugin zur graphischen Darstellung von Prisma Schema Dateien.
+    
+    Features:
+    - Automatische Erkennung von Prisma Schema Dateien (.prisma)
+    - Graphische Darstellung von Datenmodellen und Beziehungen
+    - Live-Updates bei Dateiänderungen
+    - Unterstützung für mehrere Schema-Dateien
+    - Interaktive Visualisierung mit Zoom und Pan
+    ]]></description>
+
+    <change-notes><![CDATA[
+    Version 1.0.0:
+    - Kompatibilität mit WebStorm 2025.1 (Build 251.*)
+    - Erste Version des Prisma Graph Visualizers
+    - Grundlegende Schema-Parsing-Funktionalität
+    - Graphische Darstellung von Models und Relationen
+    ]]></change-notes>
+
+    <!-- Kompatibilität mit WebStorm 2025.1 -->
+    <idea-version since-build="232" until-build="252.*"/>
+
+    <depends>com.intellij.modules.platform</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Main Tool Window -->
+        <toolWindow id="PrismaGraphFull" 
+                   displayName="Prisma Graph"
+                   secondary="false" 
+                   anchor="bottom"
+                   canCloseContents="false"
+                   factoryClass="com.alexanderkoch.prismagraph.toolwindow.PrismaGraphToolWindowFactory"/>
+        
+        <!-- File Type -->
+        <fileType name="Prisma Schema" 
+                 implementationClass="com.alexanderkoch.prismagraph.filetype.PrismaFileType" 
+                 fieldName="INSTANCE" 
+                 language="PrismaGraph" 
+                 extensions="prisma"/>
+        
+        <!-- Language -->
+        <lang.parserDefinition language="PrismaGraph" 
+                              implementationClass="com.alexanderkoch.prismagraph.lang.PrismaParserDefinition"/>
+        
+        <!-- File Icon Provider -->
+        <iconProvider implementation="com.alexanderkoch.prismagraph.icons.PrismaIconProvider"/>
+        
+        <!-- Project Service -->
+        <projectService serviceImplementation="com.alexanderkoch.prismagraph.service.PrismaSchemaService"/>
+    </extensions>
+
+    <actions>
+        <group id="PrismaGraphActions" text="Prisma Graph" description="Prisma Graph Actions">
+            <add-to-group group-id="ToolsMenu" anchor="last"/>
+            <add-to-group group-id="ViewMenu" anchor="last"/>
+            <action id="OpenPrismaGraph" 
+                   class="com.alexanderkoch.prismagraph.actions.OpenPrismaGraphAction" 
+                   text="Open Prisma Graph" 
+                   description="Open the Prisma Graph tool window"/>
+            <action id="RefreshPrismaGraph" 
+                   class="com.alexanderkoch.prismagraph.actions.RefreshGraphAction" 
+                   text="Refresh Prisma Graph" 
+                   description="Refresh the Prisma schema graph"/>
+        </group>
+    </actions>
+</idea-plugin>

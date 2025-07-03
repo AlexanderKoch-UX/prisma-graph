@@ -1,0 +1,77 @@
+// Beispiel Prisma Schema für das Plugin
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  name      String?
+  posts     Post[]
+  profile   Profile?
+  comments  Comment[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Profile {
+  id     Int    @id @default(autoincrement())
+  bio    String?
+  avatar String?
+  userId Int    @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Post {
+  id        Int       @id @default(autoincrement())
+  title     String
+  content   String?
+  published Boolean   @default(false)
+  authorId  Int
+  author    User      @relation(fields: [authorId], references: [id])
+  tags      Tag[]
+  comments  Comment[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Comment {
+  id       Int    @id @default(autoincrement())
+  content  String
+  postId   Int
+  post     Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  authorId Int
+  author   User   @relation(fields: [authorId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model Tag {
+  id    Int    @id @default(autoincrement())
+  name  String @unique
+  color String @default("#000000")
+  posts Post[]
+}
+
+model Category {
+  id          Int    @id @default(autoincrement())
+  name        String @unique
+  description String?
+  posts       Post[]
+}
+
+enum Role {
+  USER
+  ADMIN
+  MODERATOR
+}
+
+enum PostStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}

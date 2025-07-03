@@ -1,0 +1,1 @@
+// This file has been removed - test tool window is no longer needed
