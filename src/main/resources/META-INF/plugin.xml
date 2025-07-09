@@ -17,14 +17,14 @@
 
     <change-notes><![CDATA[
     Version 1.0.0:
-    - Kompatibilität mit WebStorm 2025.1 (Build 251.*)
+    - Kompatibilität mit IntelliJ IDEA 2025.1.3 und höher (Build 251.*)
     - Erste Version des Prisma Graph Visualizers
     - Grundlegende Schema-Parsing-Funktionalität
     - Graphische Darstellung von Models und Relationen
     ]]></change-notes>
 
-    <!-- Kompatibilität mit WebStorm 2025.1 -->
-    <idea-version since-build="232" until-build="252.*"/>
+    <!-- Kompatibilität mit IntelliJ IDEA 2025.1.3 und höher -->
+    <idea-version since-build="251" until-build="253.*"/>
 
     <depends>com.intellij.modules.platform</depends>
 
