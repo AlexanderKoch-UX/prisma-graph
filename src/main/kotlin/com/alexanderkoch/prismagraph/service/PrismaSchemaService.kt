@@ -14,13 +14,13 @@ import java.util.concurrent.ConcurrentHashMap
  * Service zur Verwaltung und Überwachung von Prisma Schema Dateien
  */
 @Service(Service.Level.PROJECT)
-class PrismaSchemaService(private val project: Project) {
+class PrismaSchemaService(private val project: Project) : com.intellij.openapi.Disposable {
     
     private val parser = PrismaSchemaParser()
     private val schemaCache = ConcurrentHashMap<String, PrismaSchema>()
     private val messageBus: MessageBus = project.messageBus
     
-    private var fileListener: VirtualFileListener? = null
+    private var fileListener: com.intellij.openapi.vfs.newvfs.BulkFileListener? = null
     
     init {
         setupFileWatcher()
@@ -109,44 +109,46 @@ class PrismaSchemaService(private val project: Project) {
     }
     
     private fun setupFileWatcher() {
-        fileListener = object : VirtualFileListener {
-            override fun fileCreated(event: VirtualFileEvent) {
-                if (event.file.extension == "prisma") {
-                    reloadSchemaFile(event.file.path)
-                }
-            }
-            
-            override fun fileDeleted(event: VirtualFileEvent) {
-                if (event.file.extension == "prisma") {
-                    removeSchemaFile(event.file.path)
-                }
-            }
-            
-            override fun contentsChanged(event: VirtualFileEvent) {
-                if (event.file.extension == "prisma") {
-                    reloadSchemaFile(event.file.path)
-                }
-            }
-            
-            override fun fileMoved(event: VirtualFileMoveEvent) {
-                if (event.file.extension == "prisma") {
-                    removeSchemaFile(event.oldParent.path + "/" + event.fileName)
-                    reloadSchemaFile(event.file.path)
+        fileListener = object : com.intellij.openapi.vfs.newvfs.BulkFileListener {
+            override fun after(events: List<com.intellij.openapi.vfs.newvfs.events.VFileEvent>) {
+                events.forEach { event ->
+                    when (event) {
+                        is com.intellij.openapi.vfs.newvfs.events.VFileCreateEvent -> {
+                            if (event.file?.extension == "prisma") {
+                                reloadSchemaFile(event.file!!.path)
+                            }
+                        }
+                        is com.intellij.openapi.vfs.newvfs.events.VFileDeleteEvent -> {
+                            if (event.file.extension == "prisma") {
+                                removeSchemaFile(event.file.path)
+                            }
+                        }
+                        is com.intellij.openapi.vfs.newvfs.events.VFileContentChangeEvent -> {
+                            if (event.file.extension == "prisma") {
+                                reloadSchemaFile(event.file.path)
+                            }
+                        }
+                        is com.intellij.openapi.vfs.newvfs.events.VFileMoveEvent -> {
+                            if (event.file.extension == "prisma") {
+                                removeSchemaFile(event.oldParent.path + "/" + event.file.name)
+                                reloadSchemaFile(event.file.path)
+                            }
+                        }
+                    }
                 }
             }
         }
         
-        VirtualFileManager.getInstance().addVirtualFileListener(fileListener!!)
+        project.messageBus.connect(this).subscribe(VirtualFileManager.VFS_CHANGES, fileListener!!)
     }
     
     private fun notifySchemaChanged() {
         messageBus.syncPublisher(SCHEMA_CHANGED_TOPIC).schemaChanged(getCombinedSchema())
     }
     
-    fun dispose() {
-        fileListener?.let {
-            VirtualFileManager.getInstance().removeVirtualFileListener(it)
-        }
+    override fun dispose() {
+        // Message bus connections are automatically disposed when the disposable is disposed
+        fileListener = null
     }
     
     companion object {
