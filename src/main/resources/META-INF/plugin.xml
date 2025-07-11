@@ -2,28 +2,61 @@
 <idea-plugin>
     <id>com.alexanderkoch.prismagraph</id>
     <name>Prisma Graph Visualizer</name>
+    <version>1.0.0</version>
     <vendor email="alexander.koch@example.com" url="https://github.com/AlexanderKoch-UX">Alexander Koch</vendor>
+    <category>Tools</category>
 
     <description><![CDATA[
-    Ein Plugin zur graphischen Darstellung von Prisma Schema Dateien.
+    A plugin for graphical visualization of Prisma Schema files.
     
-    Features:
-    - Automatische Erkennung von Prisma Schema Dateien (.prisma)
-    - Graphische Darstellung von Datenmodellen und Beziehungen
-    - Live-Updates bei Dateiänderungen
-    - Unterstützung für mehrere Schema-Dateien
-    - Interaktive Visualisierung mit Zoom und Pan
+    <h3>Features:</h3>
+    <ul>
+        <li>Automatic detection of Prisma Schema files (.prisma)</li>
+        <li>Graphical visualization of data models and relationships</li>
+        <li>Live updates when files change</li>
+        <li>Support for multiple schema files</li>
+        <li>Interactive visualization with zoom and pan</li>
+        <li>Dedicated tool window for graph visualization</li>
+        <li>Support for One-to-One, One-to-Many, and Many-to-Many relationships</li>
+    </ul>
+    
+    <h3>Supported IDEs:</h3>
+    <ul>
+        <li>IntelliJ IDEA</li>
+        <li>WebStorm</li>
+        <li>PHPStorm</li>
+        <li>PyCharm</li>
+        <li>GoLand</li>
+        <li>RubyMine</li>
+        <li>CLion</li>
+        <li>DataGrip</li>
+        <li>Rider</li>
+        <li>Android Studio</li>
+    </ul>
+    
+    <h3>How to Use:</h3>
+    <ol>
+        <li>Open a project containing .prisma files</li>
+        <li>Open the "Prisma Graph" tool window (View → Tool Windows → Prisma Graph)</li>
+        <li>The graph will automatically display your schema structure</li>
+        <li>Use mouse interactions to navigate and explore your data model</li>
+    </ol>
     ]]></description>
 
     <change-notes><![CDATA[
-    Version 1.0.0:
-    - Kompatibilität mit IntelliJ IDEA 2025.1.3 und höher (Build 251.*)
-    - Erste Version des Prisma Graph Visualizers
-    - Grundlegende Schema-Parsing-Funktionalität
-    - Graphische Darstellung von Models und Relationen
+    <h3>Version 1.0.0</h3>
+    <ul>
+        <li>Initial release of Prisma Graph Visualizer</li>
+        <li>Compatibility with IntelliJ IDEA 2025.1.3 and higher (Build 251.*)</li>
+        <li>Basic schema parsing functionality</li>
+        <li>Graphical display of models and relationships</li>
+        <li>Interactive graph navigation with zoom and pan</li>
+        <li>Live schema updates</li>
+        <li>Support for multiple schema files</li>
+    </ul>
     ]]></change-notes>
 
-    <!-- Kompatibilität mit IntelliJ IDEA 2025.1.3 und höher -->
+    <!-- Compatibility with IntelliJ IDEA 2025.1.3 and higher -->
     <idea-version since-build="251" until-build="253.*"/>
 
     <depends>com.intellij.modules.platform</depends>

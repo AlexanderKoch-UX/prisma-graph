@@ -47,10 +47,8 @@ tasks {
         // Plugin-Beschreibung aktualisieren
         changeNotes.set("""
             Version 1.0.0:
-            - Kompatibilität mit IntelliJ IDEA 2025.1.3 und höher (Build 251.*)
-            - Erste Version des Prisma Graph Visualizers
-            - Grundlegende Schema-Parsing-Funktionalität
-            - Graphische Darstellung von Models und Relationen
+            - Jetbrains IntelliJ IDEA 2025.1.3 Compatibility (Until Build 253.*)
+            - First Release
         """.trimIndent())
     }
 }
