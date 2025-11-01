@@ -12,13 +12,22 @@ import javax.swing.Icon
  */
 class PrismaIconProvider : IconProvider() {
     
-    private val prismaIcon: Icon by lazy {
-        // Fallback zu einem Standard-Icon falls das Prisma-Icon nicht gefunden wird
+    private val prismaIcon: Icon? by lazy {
+        // Try SVG icon first (better quality, supports all sizes)
         try {
-            IconLoader.getIcon("/icons/prisma.png", PrismaIconProvider::class.java)
+            IconLoader.getIcon("/icons/prisma.svg", PrismaIconProvider::class.java)
         } catch (e: Exception) {
-            // Verwende ein Standard-Icon als Fallback
-            IconLoader.getIcon("/general/add.png", PrismaIconProvider::class.java)
+            try {
+                // Fallback to PNG if SVG not available
+                IconLoader.getIcon("/icons/prisma.png", PrismaIconProvider::class.java)
+            } catch (e2: Exception) {
+                // Verwende ein Standard-Icon als Fallback
+                try {
+                    IconLoader.getIcon("/general/add.png", PrismaIconProvider::class.java)
+                } catch (e3: Exception) {
+                    null
+                }
+            }
         }
     }
     

@@ -1,0 +1,9 @@
+.git
+.idea
+build
+*.iml
+.DS_Store
+.zencoder
+.kotlin
+*.log
+.github

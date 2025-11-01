@@ -2,7 +2,7 @@
 <idea-plugin>
     <id>com.alexanderkoch.prismagraph</id>
     <name>Prisma Graph Visualizer</name>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <vendor email="alexander.koch@example.com" url="https://github.com/AlexanderKoch-UX">Alexander Koch</vendor>
     <category>Tools</category>
 
@@ -44,6 +44,15 @@
     ]]></description>
 
     <change-notes><![CDATA[
+    <h3>Version 1.0.1</h3>
+    <ul>
+        <li>🐛 Fixed missing Prisma icon - now displays properly in file lists and UI</li>
+        <li>🐛 Fixed Mac M1/MacOS touchpad zoom behavior - reduced aggressive scaling for smoother experience</li>
+        <li>🐛 Fixed model dragging - can now drag models to upper left corner and all edges</li>
+        <li>⚡ Added mouse wheel event throttling for better performance</li>
+        <li>📦 Added proper SVG icon support with fallback to PNG</li>
+    </ul>
+    
     <h3>Version 1.0.0</h3>
     <ul>
         <li>Initial release of Prisma Graph Visualizer</li>

@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.alexanderkoch.prismagraph"
-version = "1.0.0"
+version = "1.0.1"
 
 repositories {
     mavenCentral()
@@ -46,9 +46,15 @@ tasks {
         
         // Plugin-Beschreibung aktualisieren
         changeNotes.set("""
+            Version 1.0.1:
+            - Fixed missing Prisma icon - now displays properly in file lists
+            - Fixed Mac M1/MacOS touchpad zoom behavior with event throttling
+            - Fixed model dragging - can now drag to upper left corner and all edges
+            - Added SVG icon support with PNG fallback
+            
             Version 1.0.0:
             - Jetbrains IntelliJ IDEA 2025.1.3 Compatibility (Until Build 253.*)
-            - First Release
+            - Initial Release
         """.trimIndent())
     }
 }

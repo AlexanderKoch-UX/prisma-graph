@@ -17,9 +17,15 @@ class PrismaFileType : LanguageFileType(PrismaLanguage.INSTANCE) {
     
     override fun getIcon(): Icon? {
         return try {
-            IconLoader.getIcon("/icons/prisma.png", PrismaFileType::class.java)
+            // Try SVG icon first (better quality, supports all sizes)
+            IconLoader.getIcon("/icons/prisma.svg", PrismaFileType::class.java)
         } catch (e: Exception) {
-            null // Fallback zu Standard-Icon
+            try {
+                // Fallback to PNG if SVG not available
+                IconLoader.getIcon("/icons/prisma.png", PrismaFileType::class.java)
+            } catch (e2: Exception) {
+                null // Fallback zu Standard-Icon
+            }
         }
     }
     

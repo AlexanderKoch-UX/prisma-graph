@@ -3,7 +3,6 @@ package com.alexanderkoch.prismagraph.ui
 import com.alexanderkoch.prismagraph.model.*
 import java.awt.*
 import java.awt.event.*
-import java.awt.geom.Rectangle2D
 import javax.swing.*
 import kotlin.math.*
 
@@ -22,6 +21,8 @@ class PrismaGraphPanel : JPanel() {
     private var lastMousePos = Point(0, 0)
     private var isPanning = false
     private var enforceMinimumDistance = true  // Toggle for minimum distance enforcement
+    private var lastWheelEventTime = 0L  // For throttling mouse wheel events
+    private val wheelEventThrottleMs = 20L  // Throttle wheel events to 50Hz max
     
     // Styling - SynthWave '84 Theme
     private val modelWidth = 200
@@ -42,7 +43,6 @@ class PrismaGraphPanel : JPanel() {
     private val synthBorder = Color(0x2D3748)           // Subtle border
     private val synthText = Color(0xE2E8F0)             // Light text
     private val synthSubtext = Color(0x9CA3AF)          // Muted text
-    private val synthGlow = Color(0x7C3AED)             // Glow effect
     
     // Theme colors
     private val headerColor = synthPurple
@@ -78,7 +78,6 @@ class PrismaGraphPanel : JPanel() {
         
         // Calculate grid dimensions with minimum distance consideration
         val cols = ceil(sqrt(schema.models.size.toDouble())).toInt()
-        val rows = ceil(schema.models.size.toDouble() / cols).toInt()
         
         // Calculate spacing that ensures minimum distance
         val effectiveSpacing = maxOf(modelSpacing, minimumDistance)
@@ -88,8 +87,8 @@ class PrismaGraphPanel : JPanel() {
             val row = index / cols
             
             // Initial position calculation
-            var x = col * (modelWidth + effectiveSpacing) + effectiveSpacing
-            var y = row * (calculateModelHeight(model) + effectiveSpacing) + effectiveSpacing
+            val x = col * (modelWidth + effectiveSpacing) + effectiveSpacing
+            val y = row * (calculateModelHeight(model) + effectiveSpacing) + effectiveSpacing
             
             // Ensure minimum distance from all existing models (if enabled)
             var position = Point(x, y)
@@ -105,7 +104,7 @@ class PrismaGraphPanel : JPanel() {
      * Ensures the given position maintains minimum distance from all existing models
      */
     private fun ensureMinimumDistance(proposedPosition: Point, currentModelName: String): Point {
-        var adjustedPosition = Point(proposedPosition.x, proposedPosition.y)
+        val adjustedPosition = Point(proposedPosition.x, proposedPosition.y)
         var attempts = 0
         val maxAttempts = 100 // Prevent infinite loops
         
@@ -143,10 +142,8 @@ class PrismaGraphPanel : JPanel() {
             attempts++
         }
         
-        // Ensure position is not negative
-        adjustedPosition.x = maxOf(adjustedPosition.x, modelSpacing)
-        adjustedPosition.y = maxOf(adjustedPosition.y, modelSpacing)
-        
+        // Allow models to be positioned anywhere (including upper left corner)
+        // No longer enforcing minimum position constraints
         return adjustedPosition
     }
     
@@ -163,7 +160,7 @@ class PrismaGraphPanel : JPanel() {
      * Ensures minimum distance during drag operations with smoother behavior
      */
     private fun ensureMinimumDistanceForDrag(proposedPosition: Point, currentModelName: String): Point {
-        var adjustedPosition = Point(proposedPosition.x, proposedPosition.y)
+        val adjustedPosition = Point(proposedPosition.x, proposedPosition.y)
         
         // Check distance to all other models
         for ((modelName, existingPosition) in modelPositions) {
@@ -183,10 +180,8 @@ class PrismaGraphPanel : JPanel() {
             }
         }
         
-        // Ensure position is not negative
-        adjustedPosition.x = maxOf(adjustedPosition.x, modelSpacing)
-        adjustedPosition.y = maxOf(adjustedPosition.y, modelSpacing)
-        
+        // Allow models to be positioned anywhere (including upper left corner)
+        // No longer enforcing minimum position constraints
         return adjustedPosition
     }
     
@@ -525,11 +520,19 @@ class PrismaGraphPanel : JPanel() {
         })
         
         addMouseWheelListener { e ->
+            // Throttle wheel events to prevent excessive zooming, especially on Mac trackpad
+            val currentTime = System.currentTimeMillis()
+            if (currentTime - lastWheelEventTime < wheelEventThrottleMs) {
+                return@addMouseWheelListener
+            }
+            lastWheelEventTime = currentTime
+            
             val oldScale = scale
-            val scaleFactor = if (e.wheelRotation < 0) 1.1 else 0.9
+            // Use more conservative scale factor (1.05 instead of 1.1) for smoother Mac touchpad support
+            val scaleFactor = if (e.wheelRotation < 0) 1.05 else 0.95
             scale = (scale * scaleFactor).coerceIn(0.1, 3.0)
             
-            // Zoom zum Mauszeiger
+            // Zoom toward the mouse pointer
             val mouseX = e.x - panOffset.x
             val mouseY = e.y - panOffset.y
             panOffset.x += (mouseX * (oldScale - scale) / oldScale).toInt()
